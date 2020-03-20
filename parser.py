@@ -7,14 +7,14 @@ import re
 import checker
 import follow 
 
-
 import telebot
 
 
 
 bot = telebot.TeleBot('755244271:AAEWLTazCjxuDctI6oBjhZZpAuvMTiauIlo')
 
-
+# global start_follow 
+# start_follow = True
 
 
 @bot.message_handler(commands=['password'])
@@ -31,13 +31,28 @@ def send_file(message):
         bot.send_message(message.from_user.id,'Документ не составлен')
 @bot.message_handler(commands=['follow'])
 def send_item(message):
-    bot.send_message(message.from_user.id,follow.main())       
-       
+    global start_follow 
+    start_follow = True
+    while start_follow:
+        # bot.send_message(message.from_user.id, "Привет")
+        # time.sleep(10)
+   
+        try:
+            bot.send_message(message.from_user.id,follow.main())
+        except Exception as e:
+            print(e)
+           
 
-while True:
+@bot.message_handler(commands=['stop'])
+def stop_send_item(message):
+    global start_follow
+    start_follow = False             
+    follow.del_list()    
+    bot.send_message(message.from_user.id, "Пока")
+while True: 
     try:
         bot.polling(none_stop=True)
-
+     
     except Exception as e:
         print(e)  # или просто print(e) если у вас логгера нет,
         # или import traceback; traceback.print_exc() для печати полной инфы
